@@ -14,10 +14,10 @@ interface Props {
 
 const {
   topper = "Our Work",
-  heading = "Recent Projects",
-  description = "See the quality and attention to detail we bring to every project.",
+  heading = "Examples of our work",
+  description = "See the quality and attention to detail we bring to every job.",
   images = defaultImages,
-  ctaLabel = "View All Projects",
+  ctaLabel = "View All Services",
   ctaHref = "/services",
 } = Astro.props;
 ---
@@ -34,12 +34,15 @@ const {
       <p class="mt-3 text-text-muted leading-relaxed">{description}</p>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
       {
-        images.map(({ src, alt }) => (
-          <div
-            class="group relative overflow-hidden rounded-lg aspect-4/3 bg-surface"
+        images.map(({ src, alt }, idx) => (
+          <button
+            type="button"
+            class="group relative overflow-hidden rounded-lg aspect-4/3 bg-surface cursor-pointer text-left"
             data-gallery-item
+            data-gallery-index={idx}
+            aria-label={`View full image: ${alt}`}
           >
             {/* Shimmer skeleton — visible while the image loads */}
             <div
@@ -86,17 +89,80 @@ const {
             <div class="absolute inset-0 flex items-end bg-linear-to-t from-dark/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <p class="p-3 text-sm font-medium text-white sm:p-4">{alt}</p>
             </div>
-          </div>
+          </button>
         ))
       }
     </div>
+
+    {/* ── Lightbox dialog ─────────────────────────────────────────── */}
+    <dialog
+      id="gallery-lightbox"
+      class="fixed inset-0 z-50 m-0 h-dvh w-dvw max-h-none max-w-none bg-dark/95 backdrop:bg-dark/80 open:flex open:items-center open:justify-center"
+      aria-label="Image gallery lightbox"
+    >
+      <div class="relative flex h-full w-full items-center justify-center">
+        {/* Close button */}
+        <button
+          type="button"
+          data-lightbox-close
+          class="absolute right-3 top-3 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-5 sm:top-5"
+          aria-label="Close lightbox"
+        >
+          <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Previous button */}
+        <button
+          type="button"
+          data-lightbox-prev
+          class="absolute left-2 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-5"
+          aria-label="Previous image"
+        >
+          <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Image container */}
+        <figure class="flex max-h-[85dvh] max-w-[90vw] flex-col items-center gap-3 sm:max-w-[80vw]" data-lightbox-figure>
+          <img
+            src=""
+            alt=""
+            class="max-h-[75dvh] max-w-full rounded-md object-contain"
+            data-lightbox-img
+          />
+          <figcaption class="text-center text-sm text-white/80" data-lightbox-caption></figcaption>
+        </figure>
+
+        {/* Next button */}
+        <button
+          type="button"
+          data-lightbox-next
+          class="absolute right-2 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-5"
+          aria-label="Next image"
+        >
+          <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* Counter */}
+        <span
+          class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80"
+          data-lightbox-counter
+          aria-live="polite"
+        ></span>
+      </div>
+    </dialog>
 
     {
       ctaLabel && (
         <div class="mt-10 text-center">
           <a
             href={ctaHref}
-            class="inline-flex min-h-[44px] items-center gap-2 rounded-md border-2 border-primary px-6 py-3 text-base font-bold text-primary transition-colors hover:bg-primary hover:text-primary-fg"
+            class="inline-flex min-h-11 items-center gap-2 rounded-md border-2 border-primary px-6 py-3 text-base font-bold text-primary transition-colors hover:bg-primary hover:text-primary-fg"
           >
             {ctaLabel}
             <svg
@@ -122,6 +188,7 @@ const {
 
 <script>
   function initGallery() {
+    // ── Thumbnail loading states ──────────────────────────────────
     document.querySelectorAll<HTMLElement>("[data-gallery-item]").forEach((item) => {
       const img = item.querySelector<HTMLImageElement>("[data-gallery-img]");
       const skeleton = item.querySelector<HTMLElement>("[data-skeleton]");
@@ -140,7 +207,6 @@ const {
         errorState!.classList.add("flex");
       }
 
-      // Image already cached and decoded before script ran
       if (img.complete) {
         img.naturalWidth > 0 ? onLoad() : onError();
         return;
@@ -148,6 +214,106 @@ const {
 
       img.addEventListener("load", onLoad, { once: true });
       img.addEventListener("error", onError, { once: true });
+    });
+
+    // ── Lightbox ──────────────────────────────────────────────────
+    const dialog = document.getElementById("gallery-lightbox") as HTMLDialogElement | null;
+    if (!dialog || dialog.dataset.lbInit === "true") return;
+    dialog.dataset.lbInit = "true";
+
+    const lbImg = dialog.querySelector<HTMLImageElement>("[data-lightbox-img]")!;
+    const lbCaption = dialog.querySelector<HTMLElement>("[data-lightbox-caption]")!;
+    const lbCounter = dialog.querySelector<HTMLElement>("[data-lightbox-counter]")!;
+    const btnClose = dialog.querySelector<HTMLButtonElement>("[data-lightbox-close]")!;
+    const btnPrev = dialog.querySelector<HTMLButtonElement>("[data-lightbox-prev]")!;
+    const btnNext = dialog.querySelector<HTMLButtonElement>("[data-lightbox-next]")!;
+
+    // Collect image data from rendered thumbnails
+    type Slide = { src: string; alt: string };
+    let slides: Slide[] = [];
+    let current = 0;
+    let triggerEl: HTMLElement | null = null;
+
+    function collectSlides() {
+      slides = [];
+      document.querySelectorAll<HTMLElement>("[data-gallery-item]").forEach((item) => {
+        const img = item.querySelector<HTMLImageElement>("[data-gallery-img]");
+        if (!img) return;
+        slides.push({ src: img.currentSrc || img.src, alt: img.alt });
+      });
+    }
+
+    function show(index: number) {
+      current = ((index % slides.length) + slides.length) % slides.length;
+      const slide = slides[current];
+      lbImg.src = slide.src;
+      lbImg.alt = slide.alt;
+      lbCaption.textContent = slide.alt;
+      lbCounter.textContent = `${current + 1} / ${slides.length}`;
+    }
+
+    function open(index: number, trigger: HTMLElement) {
+      collectSlides();
+      if (slides.length === 0) return;
+      triggerEl = trigger;
+      show(index);
+      dialog?.showModal();
+    }
+
+    function close() {
+      dialog?.close();
+      triggerEl?.focus();
+      triggerEl = null;
+    }
+
+    // Open on thumbnail click
+    document.addEventListener("click", (e) => {
+      const btn = (e.target as Element).closest<HTMLElement>("[data-gallery-index]");
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.galleryIndex ?? "0", 10);
+      open(idx, btn);
+    });
+
+    // Navigation buttons
+    btnClose.addEventListener("click", close);
+    btnPrev.addEventListener("click", () => show(current - 1));
+    btnNext.addEventListener("click", () => show(current + 1));
+
+    // Close on backdrop click (native dialog fires click on the dialog itself)
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) close();
+    });
+
+    // Keyboard navigation (arrows handled inside the open dialog)
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); show(current - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); show(current + 1); }
+    });
+
+    // ── Touch / swipe support ─────────────────────────────────────
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let swiping = false;
+
+    dialog.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      swiping = true;
+    }, { passive: true });
+
+    dialog.addEventListener("touchend", (e) => {
+      if (!swiping || e.changedTouches.length !== 1) return;
+      swiping = false;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+      dx < 0 ? show(current + 1) : show(current - 1);
+    }, { passive: true });
+
+    // Clean up dialog-init flag on page swap so it re-binds
+    document.addEventListener("astro:before-swap", () => {
+      dialog.dataset.lbInit = "";
     });
   }
 

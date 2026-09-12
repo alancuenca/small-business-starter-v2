@@ -1,52 +1,70 @@
 ---
-import { brand } from '../config/brand';
-import { siteData } from '../data/siteData';
+import { brand } from "../config/brand";
+import { siteData } from "../data/siteData";
 
 const { nav } = siteData;
-const currentPath = Astro.url.pathname;
+const strip = (p: string) =>
+  p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
+const currentPath = strip(Astro.url.pathname);
 ---
 
 <header
   class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm"
   transition:persist
 >
-  <div class="mx-auto flex max-w-site items-center justify-between px-4 py-3 sm:px-6">
+  <div
+    class="mx-auto flex max-w-site items-center justify-between px-4 py-4 sm:px-6"
+  >
     <!-- Logo -->
+    <div class="flex flex-col gap-2">
     <a
       href="/"
       class="font-heading text-xl font-bold uppercase tracking-wide text-primary transition-opacity hover:opacity-80"
     >
       {brand.name}
     </a>
+      <span class="rounded-full lg:hidden text-xs font-medium">
+        {siteData.license}
+      </span>
+      </div>
 
     <!-- Desktop nav -->
-    <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-      {nav.map(({ label, href }) => {
-        const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
-        return (
-          <a
-            href={href}
-            aria-current={isActive ? 'page' : undefined}
-            class:list={[
-              'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-              isActive
-                ? 'bg-primary/10 text-primary'
-                : 'text-text-muted hover:text-text',
-            ]}
-          >
-            {label}
-          </a>
-        );
-      })}
+    <nav
+      class="hidden items-center gap-1 lg:flex"
+      aria-label="Primary navigation"
+    >
+      {
+        nav.map(({ label, href }) => {
+          const isActive =
+            currentPath === href ||
+            (href !== "/" && currentPath.startsWith(href));
+          return (
+            <a
+              href={href}
+              aria-current={isActive ? "page" : undefined}
+              class:list={[
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-text-muted hover:text-text",
+              ]}
+            >
+              {label}
+            </a>
+          );
+        })
+      }
     </nav>
 
     <!-- Desktop CTA + phone -->
     <div class="hidden items-center gap-4 lg:flex">
-      {siteData.license && (
-        <span class="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-text-muted">
-          {siteData.license}
-        </span>
-      )}
+      {
+        siteData.license && (
+          <span class="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-text-muted">
+            {siteData.license}
+          </span>
+        )
+      }
       <a
         href={`tel:${siteData.phoneForTel}`}
         class="text-sm font-semibold text-text transition-colors hover:text-primary"
@@ -55,7 +73,7 @@ const currentPath = Astro.url.pathname;
       </a>
       <a
         href="/contact"
-        class="inline-flex min-h-[44px] items-center rounded-md bg-accent px-5 py-2.5 text-sm font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        class="inline-flex min-h-11 items-center rounded-md bg-accent px-5 py-2.5 text-sm font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         Free Quote
       </a>
@@ -67,7 +85,7 @@ const currentPath = Astro.url.pathname;
       type="button"
       aria-expanded="false"
       aria-controls="mobile-menu"
-      class="relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-text-muted hover:bg-surface lg:hidden"
+      class="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-muted hover:bg-surface lg:hidden"
     >
       <span class="sr-only">Toggle menu</span>
       <span class="hamburger-box" aria-hidden="true">
@@ -81,30 +99,34 @@ const currentPath = Astro.url.pathname;
   <!-- Mobile drawer -->
   <div
     id="mobile-menu"
-    class="mobile-drawer border-t border-border bg-background lg:hidden"
+    class="mobile-drawer"
     inert
   >
-    <div class="px-4 pb-6 pt-2">
+    <div class="border-t border-border bg-background">
       <nav class="flex flex-col gap-1" aria-label="Mobile navigation">
-        {nav.map(({ label, href }) => {
-          const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
-          return (
-            <a
-              href={href}
-              class:list={[
-                'rounded-md px-3 py-3 text-base font-medium transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-text-muted hover:text-text hover:bg-surface',
-              ]}
-            >
-              {label}
-            </a>
-          );
-        })}
+        {
+          nav.map(({ label, href }) => {
+            const isActive =
+              currentPath === href ||
+              (href !== "/" && currentPath.startsWith(href));
+            return (
+              <a
+                href={href}
+                class:list={[
+                  "rounded-md px-3 py-3 text-base font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-text-muted hover:text-text hover:bg-surface",
+                ]}
+              >
+                {label}
+              </a>
+            );
+          })
+        }
       </nav>
 
-      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4">
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 pb-6">
         <a
           href={`tel:${siteData.phoneForTel}`}
           class="flex items-center gap-2 px-3 py-2 text-base font-semibold text-text"
@@ -113,13 +135,11 @@ const currentPath = Astro.url.pathname;
         </a>
         <a
           href="/contact"
-          class="flex min-h-[44px] items-center justify-center rounded-md bg-accent px-5 py-3 text-base font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90"
+          class="flex min-h-11 items-center justify-center rounded-md bg-accent px-5 py-3 mx-3 text-base font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90"
         >
           Get a Free Quote
         </a>
-        {siteData.license && (
-          <p class="px-3 pt-1 text-xs text-text-muted">{siteData.license}</p>
-        )}
+
       </div>
     </div>
   </div>
@@ -141,18 +161,20 @@ const currentPath = Astro.url.pathname;
     height: 2px;
     border-radius: 9999px;
     background-color: currentColor;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
     transform-origin: center;
   }
 
   /* Open state — morph to X */
-  [aria-expanded='true'] .hamburger-bar:nth-child(1) {
+  [aria-expanded="true"] .hamburger-bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
   }
-  [aria-expanded='true'] .hamburger-bar:nth-child(2) {
+  [aria-expanded="true"] .hamburger-bar:nth-child(2) {
     opacity: 0;
   }
-  [aria-expanded='true'] .hamburger-bar:nth-child(3) {
+  [aria-expanded="true"] .hamburger-bar:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
   }
 
@@ -160,16 +182,22 @@ const currentPath = Astro.url.pathname;
   .mobile-drawer {
     display: grid;
     grid-template-rows: 0fr;
-    opacity: 0;
-    overflow: hidden;
-    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
+    transition: grid-template-rows 0.3s ease;
   }
   .mobile-drawer.is-open {
     grid-template-rows: 1fr;
-    opacity: 1;
   }
   .mobile-drawer > div {
+    min-height: 0;
     overflow: hidden;
+  }
+
+  /* Scoped display:grid overrides Tailwind's lg:hidden (layer conflict),
+     so we handle the desktop breakpoint here directly. */
+  @media (min-width: 1024px) {
+    .mobile-drawer {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -181,29 +209,25 @@ const currentPath = Astro.url.pathname;
 </style>
 
 <script>
-  (() => {
-    const headerEl = document.querySelector('header');
-    const btnEl = document.getElementById('menu-toggle');
-    const menuEl = document.getElementById('mobile-menu');
+  function initHeader() {
+    const header = document.querySelector("header") as HTMLElement;
+    const btn = document.getElementById("menu-toggle") as HTMLButtonElement;
+    const menu = document.getElementById("mobile-menu") as HTMLElement;
+    if (!header || !btn || !menu) return;
 
-    if (!headerEl || !btnEl || !menuEl) return;
+    // Prevent duplicate listeners when transition:persist keeps the DOM
+    if (header.dataset.headerInit === "true") return;
+    header.dataset.headerInit = "true";
 
-    const header = headerEl as HTMLElement;
-    const btn = btnEl as HTMLButtonElement;
-    const menu = menuEl as HTMLElement;
-
-    if (header.dataset.menuInit === 'true') return;
-    header.dataset.menuInit = 'true';
-
-    const activeClasses = ['bg-primary/10', 'text-primary'];
-    const inactiveDesktop = ['text-text-muted', 'hover:text-text'];
-    const inactiveMobile = ['text-text-muted', 'hover:text-text', 'hover:bg-surface'];
-
-    const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
+    const ACTIVE = ["bg-primary/10", "text-primary"];
+    const INACTIVE_DT = ["text-text-muted", "hover:text-text"];
+    const INACTIVE_MB = ["text-text-muted", "hover:text-text", "hover:bg-surface"];
+    const isDesktop = () => window.matchMedia("(min-width: 1024px)").matches;
+    const strip = (p: string) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
 
     let focusableEls: HTMLElement[] = [];
 
-    function getFocusableElements(): HTMLElement[] {
+    function getFocusable(): HTMLElement[] {
       return Array.from(
         menu.querySelectorAll<HTMLElement>(
           'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
@@ -212,7 +236,7 @@ const currentPath = Astro.url.pathname;
     }
 
     function trapFocus(e: KeyboardEvent) {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
       const els = focusableEls;
       if (els.length === 0) return;
       const first = els[0];
@@ -222,95 +246,98 @@ const currentPath = Astro.url.pathname;
           e.preventDefault();
           last.focus();
         }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          btn.focus();
-        }
+      } else if (document.activeElement === last) {
+        e.preventDefault();
+        btn.focus();
       }
     }
 
-    const setMenuOpen = (nextOpen: boolean) => {
-      if (isDesktop()) nextOpen = false;
-      btn.setAttribute('aria-expanded', String(nextOpen));
-      if (nextOpen) {
-        menu.removeAttribute('inert');
-      } else {
-        menu.setAttribute('inert', '');
-      }
-      menu.classList.toggle('is-open', nextOpen);
-      document.body.classList.toggle('overflow-hidden', nextOpen);
+    function setMenuOpen(open: boolean) {
+      if (isDesktop()) open = false;
+      btn.setAttribute("aria-expanded", String(open));
+      menu.toggleAttribute("inert", !open);
+      menu.classList.toggle("is-open", open);
+      document.body.classList.toggle("overflow-hidden", open);
 
-      if (nextOpen) {
-        focusableEls = getFocusableElements();
-        document.addEventListener('keydown', trapFocus);
+      if (open) {
+        focusableEls = getFocusable();
+        document.addEventListener("keydown", trapFocus);
       } else {
-        document.removeEventListener('keydown', trapFocus);
+        document.removeEventListener("keydown", trapFocus);
       }
-    };
+    }
 
     function syncActiveLinks() {
-      const path = window.location.pathname;
-      const desktopLinks = header.querySelectorAll('nav[aria-label="Primary navigation"] a');
-      const mobileLinks = header.querySelectorAll('#mobile-menu nav a');
+      const path = strip(window.location.pathname);
+      const dtLinks = header.querySelectorAll('nav[aria-label="Primary navigation"] a');
+      const mbLinks = header.querySelectorAll("#mobile-menu nav a");
 
-      desktopLinks.forEach((link) => {
-        const href = link.getAttribute('href') || '';
-        const isActive = href === path || (href !== '/' && path.startsWith(href));
-        link.classList.toggle(activeClasses[0], isActive);
-        link.classList.toggle(activeClasses[1], isActive);
-        link.classList.toggle(inactiveDesktop[0], !isActive);
-        link.classList.toggle(inactiveDesktop[1], !isActive);
-        if (isActive) link.setAttribute('aria-current', 'page');
-        else link.removeAttribute('aria-current');
+      dtLinks.forEach((link) => {
+        const href = strip(link.getAttribute("href") || "");
+        const active = href === path || (href !== "/" && path.startsWith(href));
+        link.classList.toggle(ACTIVE[0], active);
+        link.classList.toggle(ACTIVE[1], active);
+        link.classList.toggle(INACTIVE_DT[0], !active);
+        link.classList.toggle(INACTIVE_DT[1], !active);
+        if (active) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
       });
 
-      mobileLinks.forEach((link) => {
-        const href = link.getAttribute('href') || '';
-        const isActive = href === path || (href !== '/' && path.startsWith(href));
-        link.classList.toggle(activeClasses[0], isActive);
-        link.classList.toggle(activeClasses[1], isActive);
-        link.classList.toggle(inactiveMobile[0], !isActive);
-        link.classList.toggle(inactiveMobile[1], !isActive);
-        link.classList.toggle(inactiveMobile[2], !isActive);
-        if (isActive) link.setAttribute('aria-current', 'page');
-        else link.removeAttribute('aria-current');
+      mbLinks.forEach((link) => {
+        const href = strip(link.getAttribute("href") || "");
+        const active = href === path || (href !== "/" && path.startsWith(href));
+        link.classList.toggle(ACTIVE[0], active);
+        link.classList.toggle(ACTIVE[1], active);
+        link.classList.toggle(INACTIVE_MB[0], !active);
+        link.classList.toggle(INACTIVE_MB[1], !active);
+        link.classList.toggle(INACTIVE_MB[2], !active);
+        if (active) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
       });
     }
 
-    // Toggle on click
-    btn.addEventListener('click', () => {
+    // ── Event listeners (bound once) ──────────────────────────────
+
+    // Toggle menu
+    btn.addEventListener("click", () => {
       if (isDesktop()) return;
-      const isOpen = btn.getAttribute('aria-expanded') === 'true';
-      setMenuOpen(!isOpen);
+      setMenuOpen(btn.getAttribute("aria-expanded") !== "true");
     });
 
-    // Close on link click
-    menu.addEventListener('click', (event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      if (target.closest('a[href]')) setMenuOpen(false);
+    // Close on link click inside drawer
+    menu.addEventListener("click", (e) => {
+      if ((e.target as Element).closest?.("a[href]")) setMenuOpen(false);
     });
 
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+    // Escape closes drawer
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && btn.getAttribute("aria-expanded") === "true") {
         setMenuOpen(false);
         btn.focus();
       }
     });
 
-    // View Transitions hooks
-    document.addEventListener('astro:before-preparation', () => setMenuOpen(false));
-    document.addEventListener('astro:after-swap', () => {
+    // Resize to desktop closes drawer
+    window.addEventListener("resize", () => {
+      if (isDesktop() && btn.getAttribute("aria-expanded") === "true") {
+        setMenuOpen(false);
+      }
+    });
+
+    // ── View Transitions: reset menu & sync active links ──────────
+    // Registered once — persists across navigations because the
+    // header DOM (and therefore this closure) survives transition:persist.
+    document.addEventListener("astro:after-swap", () => {
       setMenuOpen(false);
       syncActiveLinks();
     });
 
-    // Close on resize to desktop
-    window.addEventListener('resize', () => setMenuOpen(false));
-
+    // Initial state
     setMenuOpen(false);
     syncActiveLinks();
-  })();
+  }
+
+  // astro:page-load fires on first load AND after each transition.
+  // The init guard above ensures listeners only bind once.
+  document.addEventListener("astro:page-load", initHeader);
 </script>
