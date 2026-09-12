@@ -1,0 +1,316 @@
+---
+import { brand } from '../config/brand';
+import { siteData } from '../data/siteData';
+
+const { nav } = siteData;
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm"
+  transition:persist
+>
+  <div class="mx-auto flex max-w-site items-center justify-between px-4 py-3 sm:px-6">
+    <!-- Logo -->
+    <a
+      href="/"
+      class="font-heading text-xl font-bold uppercase tracking-wide text-primary transition-opacity hover:opacity-80"
+    >
+      {brand.name}
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+      {nav.map(({ label, href }) => {
+        const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
+        return (
+          <a
+            href={href}
+            aria-current={isActive ? 'page' : undefined}
+            class:list={[
+              'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              isActive
+                ? 'bg-primary/10 text-primary'
+                : 'text-text-muted hover:text-text',
+            ]}
+          >
+            {label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Desktop CTA + phone -->
+    <div class="hidden items-center gap-4 lg:flex">
+      {siteData.license && (
+        <span class="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-text-muted">
+          {siteData.license}
+        </span>
+      )}
+      <a
+        href={`tel:${siteData.phoneForTel}`}
+        class="text-sm font-semibold text-text transition-colors hover:text-primary"
+      >
+        {siteData.phoneFormatted}
+      </a>
+      <a
+        href="/contact"
+        class="inline-flex min-h-[44px] items-center rounded-md bg-accent px-5 py-2.5 text-sm font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        Free Quote
+      </a>
+    </div>
+
+    <!-- Mobile menu button — CSS-only hamburger/X animation -->
+    <button
+      id="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      class="relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-text-muted hover:bg-surface lg:hidden"
+    >
+      <span class="sr-only">Toggle menu</span>
+      <span class="hamburger-box" aria-hidden="true">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div
+    id="mobile-menu"
+    class="mobile-drawer border-t border-border bg-background lg:hidden"
+    inert
+  >
+    <div class="px-4 pb-6 pt-2">
+      <nav class="flex flex-col gap-1" aria-label="Mobile navigation">
+        {nav.map(({ label, href }) => {
+          const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
+          return (
+            <a
+              href={href}
+              class:list={[
+                'rounded-md px-3 py-3 text-base font-medium transition-colors',
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-text-muted hover:text-text hover:bg-surface',
+              ]}
+            >
+              {label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4">
+        <a
+          href={`tel:${siteData.phoneForTel}`}
+          class="flex items-center gap-2 px-3 py-2 text-base font-semibold text-text"
+        >
+          {siteData.phoneFormatted}
+        </a>
+        <a
+          href="/contact"
+          class="flex min-h-[44px] items-center justify-center rounded-md bg-accent px-5 py-3 text-base font-bold text-accent-fg shadow-sm transition-opacity hover:opacity-90"
+        >
+          Get a Free Quote
+        </a>
+        {siteData.license && (
+          <p class="px-3 pt-1 text-xs text-text-muted">{siteData.license}</p>
+        )}
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ── Hamburger bars ─────────────────────────────────────────────────────── */
+  .hamburger-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 22px;
+    height: 22px;
+  }
+  .hamburger-bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 9999px;
+    background-color: currentColor;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
+  }
+
+  /* Open state — morph to X */
+  [aria-expanded='true'] .hamburger-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  [aria-expanded='true'] .hamburger-bar:nth-child(2) {
+    opacity: 0;
+  }
+  [aria-expanded='true'] .hamburger-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ── Mobile drawer slide-down ───────────────────────────────────────────── */
+  .mobile-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    overflow: hidden;
+    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
+  }
+  .mobile-drawer.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .mobile-drawer > div {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hamburger-bar,
+    .mobile-drawer {
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const headerEl = document.querySelector('header');
+    const btnEl = document.getElementById('menu-toggle');
+    const menuEl = document.getElementById('mobile-menu');
+
+    if (!headerEl || !btnEl || !menuEl) return;
+
+    const header = headerEl as HTMLElement;
+    const btn = btnEl as HTMLButtonElement;
+    const menu = menuEl as HTMLElement;
+
+    if (header.dataset.menuInit === 'true') return;
+    header.dataset.menuInit = 'true';
+
+    const activeClasses = ['bg-primary/10', 'text-primary'];
+    const inactiveDesktop = ['text-text-muted', 'hover:text-text'];
+    const inactiveMobile = ['text-text-muted', 'hover:text-text', 'hover:bg-surface'];
+
+    const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
+
+    let focusableEls: HTMLElement[] = [];
+
+    function getFocusableElements(): HTMLElement[] {
+      return Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+        )
+      );
+    }
+
+    function trapFocus(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      const els = focusableEls;
+      if (els.length === 0) return;
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first || document.activeElement === btn) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          btn.focus();
+        }
+      }
+    }
+
+    const setMenuOpen = (nextOpen: boolean) => {
+      if (isDesktop()) nextOpen = false;
+      btn.setAttribute('aria-expanded', String(nextOpen));
+      if (nextOpen) {
+        menu.removeAttribute('inert');
+      } else {
+        menu.setAttribute('inert', '');
+      }
+      menu.classList.toggle('is-open', nextOpen);
+      document.body.classList.toggle('overflow-hidden', nextOpen);
+
+      if (nextOpen) {
+        focusableEls = getFocusableElements();
+        document.addEventListener('keydown', trapFocus);
+      } else {
+        document.removeEventListener('keydown', trapFocus);
+      }
+    };
+
+    function syncActiveLinks() {
+      const path = window.location.pathname;
+      const desktopLinks = header.querySelectorAll('nav[aria-label="Primary navigation"] a');
+      const mobileLinks = header.querySelectorAll('#mobile-menu nav a');
+
+      desktopLinks.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        const isActive = href === path || (href !== '/' && path.startsWith(href));
+        link.classList.toggle(activeClasses[0], isActive);
+        link.classList.toggle(activeClasses[1], isActive);
+        link.classList.toggle(inactiveDesktop[0], !isActive);
+        link.classList.toggle(inactiveDesktop[1], !isActive);
+        if (isActive) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+
+      mobileLinks.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        const isActive = href === path || (href !== '/' && path.startsWith(href));
+        link.classList.toggle(activeClasses[0], isActive);
+        link.classList.toggle(activeClasses[1], isActive);
+        link.classList.toggle(inactiveMobile[0], !isActive);
+        link.classList.toggle(inactiveMobile[1], !isActive);
+        link.classList.toggle(inactiveMobile[2], !isActive);
+        if (isActive) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+    }
+
+    // Toggle on click
+    btn.addEventListener('click', () => {
+      if (isDesktop()) return;
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      setMenuOpen(!isOpen);
+    });
+
+    // Close on link click
+    menu.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('a[href]')) setMenuOpen(false);
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false);
+        btn.focus();
+      }
+    });
+
+    // View Transitions hooks
+    document.addEventListener('astro:before-preparation', () => setMenuOpen(false));
+    document.addEventListener('astro:after-swap', () => {
+      setMenuOpen(false);
+      syncActiveLinks();
+    });
+
+    // Close on resize to desktop
+    window.addEventListener('resize', () => setMenuOpen(false));
+
+    setMenuOpen(false);
+    syncActiveLinks();
+  })();
+</script>
