@@ -1,5 +1,7 @@
 # Small Business Starter
 
+demonstration: https://small-business-starter-v2.netlify.app/
+
 A minimal, fast, and fully customisable website template for small businesses — built with **Astro 7** and **Tailwind CSS v4**.
 
 ## Quick Start
