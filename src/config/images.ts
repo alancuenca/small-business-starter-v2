@@ -30,26 +30,20 @@
 import type { ImageMetadata } from 'astro';
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
-// Recommended: landscape image, at least 1600 × 1200 px
-//
-// To use your own:
-//   1. Drop your file into src/assets/images/hero/
-//   2. Uncomment and update the line below
-//   3. Replace the heroImage export at the bottom of this section
-//
-// import heroImage from '../assets/images/hero/hero.jpg';
-export const heroImage: ImageMetadata | undefined = undefined;
+// Recommended: landscape, at least 1600 × 1200 px
+// To swap: replace the file in src/assets/images/hero/ and update the filename.
+import heroImage from '../assets/images/hero/hero.jpg';
+export { heroImage };
 
 // ── About ─────────────────────────────────────────────────────────────────────
-// Recommended: portrait or square image of your team/job site, at least 900 × 700 px
-//
-// To use your own:
-//   1. Drop your file into src/assets/images/about/
-//   2. Uncomment and update the line below
-//   3. Replace the aboutImage export at the bottom of this section
+// Recommended: portrait or square, at least 900 × 700 px
+// To use: drop your file into src/assets/images/about/, then uncomment the
+// import below, update the filename, and change the export to: export { aboutImage };
 //
 // import aboutImage from '../assets/images/about/team.jpg';
 export const aboutImage: ImageMetadata | undefined = undefined;
+//comment out above and uncomment below to use your own image
+// export { aboutImage };
 
 // ── Gallery — auto-discovered ─────────────────────────────────────────────────
 // Drop any number of image files into src/assets/images/gallery/ and they will
