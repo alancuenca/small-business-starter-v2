@@ -2,72 +2,119 @@
 
 A minimal, fast, and fully customisable website template for small businesses — built with **Astro 7** and **Tailwind CSS v4**.
 
-Edit one file to set up your entire site: business name, phone, email, address, services, reviews, team, hours, and navigation.
-
 ## Quick Start
 
 ```bash
-# Clone the template
-git clone https://github.com/your-username/small-business-starter.git
-cd small-business-starter
-
-# Install dependencies (pnpm required)
 pnpm install
-
-# Start the dev server
 pnpm dev
 ```
 
 Open `http://localhost:4321` to see your site.
 
-## Customise Your Site
+---
 
-### 1. Business information (one file)
+## Polishing Checklist
 
-Open **`src/data/siteData.ts`** and update:
+Work through each step below to turn the starter template into a finished, client-ready site.
 
-| Field | What it controls |
+### Step 1 — Business Information
+
+Open **`src/data/siteData.ts`** — this single file powers the entire site.
+
+| Field | What to update |
 |---|---|
-| `name` | Business name in header, footer, SEO |
-| `tagline` | Hero heading and footer tagline |
-| `description` | SEO meta description |
-| `email` | Contact page and footer |
-| `phoneForTel` / `phoneFormatted` | Click-to-call links everywhere |
-| `license` | License badge in header (empty string hides it) |
-| `address` | Contact page, footer, JSON-LD schema |
-| `hours` | Contact page sidebar |
-| `socials` | Footer social links (empty string hides a link) |
-| `nav` | Header and mobile navigation links |
-| `services` | Services page and homepage cards |
-| `reviews` | Reviews page and homepage testimonials |
+| `name` | Your business name |
+| `tagline` | Short headline shown in the hero and footer |
+| `description` | SEO meta description for search results |
+| `license` | License / contractor number (empty string hides it) |
+| `email` | Business email (contact page + footer) |
+| `phoneForTel` / `phoneFormatted` | Click-to-call phone number |
+| `address` | Full address + Google Maps link |
+| `hours` | Business hours (contact page sidebar) |
+| `emergencyService` | Emergency tagline (empty string hides it) |
+| `socials` | Facebook, Instagram, Google links (empty string hides a link) |
+| `nav` | Header navigation items — add, remove, or reorder |
+| `services` | Service cards (title + description) |
+| `reviews` | Customer testimonials (quote, name, location, rating) |
 | `about.story` | About page story paragraphs |
-| `about.team` | About page team grid |
-| `trustItems` | Homepage trust bar strip |
-| `footerNav` | Footer navigation columns |
+| `about.team` | Team member cards (name, role, photo URL) |
+| `trustItems` | Homepage trust bar ("Licensed", "15+ Years", etc.) |
+| `footerNav` | Footer navigation columns and links |
 
-### 2. Colours and fonts
+### Step 2 — Brand & Colors
 
-Edit **`src/config/brand.ts`** and **`src/styles/theme.css`** to change the colour palette, fonts, and border radius. Both files must stay in sync.
+Edit **`src/config/brand.ts`** to set your visual identity, then update the matching values in **`src/styles/theme.css`**. Both files must stay in sync.
 
-To swap fonts, also update the `fonts` array in **`astro.config.mjs`**.
+Key values:
 
-### 3. Images
+| Token | Controls |
+|---|---|
+| `colors.primary` | Main brand color (header, buttons, links) |
+| `colors.accent` | Accent / highlight color (CTAs, badges) |
+| `colors.background` / `surface` | Page and card backgrounds |
+| `colors.text` / `textMuted` | Body and secondary text |
+| `colors.dark` / `darkSurface` | Footer and dark sections |
+| `radius` | Border radius scale (cards, buttons, inputs) |
 
-Drop your photos into folders under `src/assets/images/`:
+### Step 3 — Fonts
 
-- `hero/` — homepage hero image
-- `about/` — team or workspace photo
-- `gallery/` — project photos (any number)
+Fonts are managed in three places — all must match:
 
-Then update `src/config/images.ts` to import your files. Placeholder images from Unsplash are used until you add your own.
+1. **`src/config/brand.ts`** → `fonts.body` and `fonts.display`
+2. **`astro.config.mjs`** → `fonts` array (provider, name, weights)
+3. **`src/styles/theme.css`** → `@theme inline` fallback stacks
 
-### 4. Site URL
+Change the `name` values in all three files to any [Google Fonts](https://fonts.google.com) family.
 
-Update the `site` field in `astro.config.mjs` and the `url` field in `siteData.ts` to match your production domain. This ensures sitemaps, canonical URLs, and structured data are correct.
+### Step 4 — Images
 
-## Blog
+Drop your own photos into the folders under `src/assets/images/`:
 
-Add Markdown files to `src/content/blog/`. Each post needs frontmatter:
+| Folder | What it's for | Recommendation |
+|---|---|---|
+| `hero/` | Homepage hero background | Landscape, ≥ 1600 × 1200 px |
+| `about/` | About section / page photo | Portrait or square, ≥ 900 × 700 px |
+| `gallery/` | Project showcase photos | Landscape 4:3, ≥ 800 × 600 px each |
+
+Then open **`src/config/images.ts`**:
+- Uncomment the `import` line for hero and about images and update the filename
+- Gallery images are auto-discovered — just drop files into `gallery/` and they appear automatically (the filename becomes the alt text: `kitchen-remodel.jpg` → "Kitchen Remodel")
+
+Placeholder Unsplash URLs are used until you add local files. **Swap them before going live** — remote images are not optimised by Astro.
+
+### Step 5 — Favicon & Open Graph Image
+
+| File | Purpose |
+|---|---|
+| `public/favicon.svg` | Replace with your logo / brand mark |
+| `public/og-image.png` | Social sharing preview image (1200 × 630 px recommended) |
+
+### Step 6 — Privacy Policy & Terms of Service
+
+Edit the data files in `src/data/`:
+
+- **`src/data/privacy.ts`** — Privacy Policy sections and effective date
+- **`src/data/terms.ts`** — Terms of Service sections and effective date
+
+Each file exports an object with the same shape:
+
+```typescript
+{
+  effectiveDate: 'September 1, 2026',
+  sections: [
+    {
+      heading: 'Section Title',
+      content: ['Paragraph one.', 'Paragraph two.'],
+    },
+  ],
+}
+```
+
+Add, remove, or reorder sections as needed. The pages at `/privacy` and `/terms` render them automatically.
+
+### Step 7 — Blog Posts
+
+Add or edit Markdown files in `src/content/blog/`. Each post needs frontmatter:
 
 ```markdown
 ---
@@ -82,7 +129,25 @@ draft: false
 Your post content here.
 ```
 
-The filename becomes the URL slug.
+The filename becomes the URL slug. Remove the three starter posts or update them with your own content.
+
+### Step 8 — Site URL & Domain
+
+Update your production domain in **two places**:
+
+1. **`astro.config.mjs`** → `site: 'https://www.yourdomain.com'`
+2. **`src/data/siteData.ts`** → `url: 'https://www.yourdomain.com'`
+
+This ensures sitemaps, canonical URLs, Open Graph tags, and JSON-LD structured data all point to the correct domain.
+
+### Step 9 — Deploy to Netlify
+
+1. Push your repo to GitHub
+2. Connect it in [Netlify](https://app.netlify.com)
+3. Build settings are auto-detected from `netlify.toml`
+4. The contact form uses Netlify Forms — no extra configuration needed
+
+---
 
 ## Pages
 
@@ -95,13 +160,27 @@ The filename becomes the URL slug.
 | `/contact` | `src/pages/contact/index.astro` |
 | `/blog` | `src/pages/blog/index.astro` |
 | `/blog/[slug]` | `src/pages/blog/[...slug].astro` |
+| `/privacy` | `src/pages/privacy.astro` |
+| `/terms` | `src/pages/terms.astro` |
 
-## Deploy to Netlify
+## Editable Data Files
 
-1. Push your repo to GitHub
-2. Connect it in [Netlify](https://app.netlify.com)
-3. Build settings are auto-detected from `netlify.toml`
-4. The contact form uses Netlify Forms (no config needed)
+| File | What to edit |
+|---|---|
+| `src/data/siteData.ts` | Business info, services, reviews, team, hours, navigation |
+| `src/data/privacy.ts` | Privacy Policy content |
+| `src/data/terms.ts` | Terms of Service content |
+| `src/config/brand.ts` | Colors, fonts, radius, identity |
+| `src/config/images.ts` | Hero, about, and gallery image imports |
+
+## Commands
+
+| Command | Action |
+|---|---|
+| `pnpm dev` | Start dev server at `localhost:4321` |
+| `pnpm build` | Build production site to `dist/` |
+| `pnpm preview` | Preview production build locally |
+| `pnpm test` | Run Playwright tests |
 
 ## Tech Stack
 
@@ -113,15 +192,6 @@ The filename becomes the URL slug.
 | SEO | @astrojs/sitemap, astro-robots-txt |
 | Testing | Playwright |
 | Hosting | Netlify (static) |
-
-## Commands
-
-| Command | Action |
-|---|---|
-| `pnpm dev` | Start dev server at `localhost:4321` |
-| `pnpm build` | Build production site to `dist/` |
-| `pnpm preview` | Preview production build locally |
-| `pnpm test` | Run Playwright tests |
 
 ## License
 
