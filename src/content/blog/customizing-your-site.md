@@ -25,14 +25,9 @@ Open `src/data/siteData.ts` and you will find every piece of business informatio
 
 ## Changing Colours
 
-The colour palette is defined in two places that must stay in sync:
+Open `src/styles/theme.css` and edit the `@theme` block — this is the single source of truth for colours, border radius, type scale, and spacing. Tailwind v4 reads these values and auto-generates utility classes (`bg-primary`, `text-accent`, `rounded-md`, etc.).
 
-```
-src/config/brand.ts    → JavaScript colour values
-src/styles/theme.css   → CSS custom properties
-```
-
-For example, to change the primary colour from navy to teal, update `#1B3A6B` to your new hex value in both files.
+For example, to change the primary colour from navy to teal, update `--color-primary: #1B3A6B` to your new hex value. No other file needs to change.
 
 ## Changing Fonts
 

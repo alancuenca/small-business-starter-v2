@@ -1,9 +1,9 @@
 /*
  * ─────────────────────────────────────────────────────────────────────────────
- * THEME — edit src/config/brand.ts to change values, not this file.
+ * THEME — single source of truth for colors, radius, type scale, and spacing.
  *
- * The @theme block registers Tailwind v4 design tokens as CSS custom
- * properties. After changing brand.ts, update the hex codes below to match.
+ * Edit the values below directly. Tailwind v4 reads this @theme block and
+ * auto-generates utility classes (bg-primary, text-accent, rounded-md, etc.).
  *
  * Fonts are injected by Astro 7's built-in font optimizer (astro.config.mjs).
  * The --font-body and --font-display variables are available here automatically.

@@ -43,24 +43,26 @@ Open **`src/data/siteData.ts`** — this single file powers the entire site.
 | `trustItems` | Homepage trust bar ("Licensed", "15+ Years", etc.) |
 | `footerNav` | Footer navigation columns and links |
 
-### Step 2 — Brand & Colors
+### Step 2 — Colors & Design Tokens
 
-Edit **`src/config/brand.ts`** to set your visual identity, then update the matching values in **`src/styles/theme.css`**. Both files must stay in sync.
+Open **`src/styles/theme.css`** — this is the single source of truth for colors, border radius, type scale, and spacing. Edit the `@theme` block directly:
 
-Key values:
-
-| Token | Controls |
+| Variable | Controls |
 |---|---|
-| `colors.primary` | Main brand color (header, buttons, links) |
-| `colors.accent` | Accent / highlight color (CTAs, badges) |
-| `colors.background` / `surface` | Page and card backgrounds |
-| `colors.text` / `textMuted` | Body and secondary text |
-| `colors.dark` / `darkSurface` | Footer and dark sections |
-| `radius` | Border radius scale (cards, buttons, inputs) |
+| `--color-primary` | Main brand color (header, buttons, links) |
+| `--color-accent` | Accent / highlight color (CTAs, badges) |
+| `--color-background` / `--color-surface` | Page and card backgrounds |
+| `--color-text` / `--color-text-muted` | Body and secondary text |
+| `--color-dark` / `--color-dark-surface` | Footer and dark sections |
+| `--radius-*` | Border radius scale (cards, buttons, inputs) |
 
-### Step 3 — Fonts
+Tailwind v4 auto-generates utility classes from these variables (`bg-primary`, `text-accent`, `rounded-md`, etc.). No other file needs to be updated when changing colors.
 
-Fonts are managed in three places — all must match:
+### Step 3 — Site Identity & Fonts
+
+Edit **`src/config/brand.ts`** for your business name, tagline, description, URL, and font names.
+
+To swap fonts, update the font `name` in all three places:
 
 1. **`src/config/brand.ts`** → `fonts.body` and `fonts.display`
 2. **`astro.config.mjs`** → `fonts` array (provider, name, weights)
@@ -88,8 +90,27 @@ Placeholder Unsplash URLs are used until you add local files. **Swap them before
 
 | File | Purpose |
 |---|---|
-| `public/favicon.svg` | Replace with your logo / brand mark |
-| `public/og-image.png` | Social sharing preview image (1200 × 630 px recommended) |
+| `public/favicon.svg` | Replace with your logo or brand mark |
+| `public/og-image.png` | Social sharing preview image — shown when your site is shared on Facebook, Twitter/X, LinkedIn, iMessage, Slack, etc. |
+
+**Favicon requirements:**
+
+A placeholder `favicon.svg` is included in public folder. Replace it with your own before going live.
+
+- **Size:** exactly **16 × 16 px** (the universally supported favicon size)
+- **Format:** SVG
+- **File name:** must be `favicon.svg` (or update the default in `BaseLayout.astro`)
+
+**OG image requirements:**
+
+A placeholder `og-image.png` is included in public folder. Replace it with your own before going live.
+
+- **Size:** exactly **1200 × 630 px** (the universally supported OG ratio)
+- **Format:** PNG or JPG (PNG for logos/text, JPG for photos)
+- **File name:** must be `og-image.png` (or update the default in `BaseLayout.astro`)
+- **Content tips:** include your business name, a short tagline, and your logo. Keep key content centered — some platforms crop the edges
+- **File size:** aim for under 300 kB; large images may not load in previews
+- **Test it:** after deploying, paste your URL into [opengraph.xyz](https://www.opengraph.xyz) or the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) to verify the preview looks correct
 
 ### Step 6 — Privacy Policy & Terms of Service
 
@@ -172,7 +193,8 @@ This ensures sitemaps, canonical URLs, Open Graph tags, and JSON-LD structured d
 | `src/data/siteData.ts` | Business info, services, reviews, team, hours, navigation |
 | `src/data/privacy.ts` | Privacy Policy content |
 | `src/data/terms.ts` | Terms of Service content |
-| `src/config/brand.ts` | Colors, fonts, radius, identity |
+| `src/styles/theme.css` | Colors, radius, type scale, spacing |
+| `src/config/brand.ts` | Site identity and font names |
 | `src/config/images.ts` | Hero, about, and gallery image imports |
 
 ## Commands

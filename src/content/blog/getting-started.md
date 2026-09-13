@@ -22,12 +22,8 @@ Everything you need to change lives in one file: `src/data/siteData.ts`. Open it
 
 ## Change the Look
 
-The colour palette and fonts are controlled by two files:
-
-- **`src/config/brand.ts`** — colour hex values, font names, and border radius
-- **`src/styles/theme.css`** — CSS custom properties that Tailwind reads from
-
-Change the colours in both files and your entire site updates instantly.
+- **Colours & radius** — edit `src/styles/theme.css` (the `@theme` block). This is the single source of truth; Tailwind auto-generates utility classes from it.
+- **Fonts** — update the font names in `src/config/brand.ts` and the `fonts` array in `astro.config.mjs`.
 
 ## Add Your Images
 
